@@ -26,6 +26,7 @@ type Services struct {
 }
 
 type Storages struct {
+	
 }
 
 func NewApp(cfg *config.Config) *App {
@@ -91,8 +92,13 @@ func (a *App) setupRoutes(handler *handlers.Handler) http.Handler {
 
 	// API routes
 	apiRoutes := map[string]http.HandlerFunc{
-		// "/api/allFavoriteCoin":    handler.GetFavorites,
-
+		"/team/add":             handler.AddTeam,
+		"/team/get":             handler.GetTeam,
+		"/users/setIsActive":    handler.SetUserIsActive,
+		"/pullRequest/create":   handler.CreatePR,
+		"/pullRequest/merge":    handler.MergePR,
+		"/pullRequest/reassign": handler.ReassignReviewer,
+		"/users/getReview":      handler.GetUserReviewPRs,
 	}
 	_ = handler
 	for path, handlerFunc := range apiRoutes {

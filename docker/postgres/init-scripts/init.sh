@@ -17,7 +17,7 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
     );
 
     CREATE TABLE IF NOT EXISTS pull_requests (
-        id SERIAL PRIMARY KEY,
+        pr_id TEXT PRIMARY KEY, 
         status VARCHAR(50) NOT NULL,
         inspector_ids TEXT[] NOT NULL DEFAULT '{}',
         is_merged BOOLEAN NOT NULL DEFAULT false,

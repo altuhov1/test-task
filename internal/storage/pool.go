@@ -22,7 +22,6 @@ func NewPoolPg(cfg *models.PGXConfig) (*pgxpool.Pool, error) {
 	config.MinConns = 2
 	config.MaxConnLifetime = time.Hour
 
-	// Подключаемся
 	pool, err := pgxpool.NewWithConfig(context.Background(), config)
 	if err != nil {
 		return nil, fmt.Errorf("ошибка подключения: %w", err)

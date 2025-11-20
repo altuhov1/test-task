@@ -2,20 +2,22 @@ package models
 
 import "time"
 
-type PRStatus string
-
-type User struct {
-	UserIds  string `json:"userIds"`
-	IsActive bool   `json:"isActive"`
+type TeamMember struct {
+	UserID   string `json:"user_id"`
+	Username string `json:"username"`
+	IsActive bool   `json:"is_active"`
 }
+
 type Team struct {
-	Name  string   `json:"name"`
-	Users []string `json:"UsersId"`
+	TeamName string       `json:"team_name"`
+	Members  []TeamMember `json:"members"`
 }
 type PullRequest struct {
-	Status        string    `json:"status"`
-	InspectorsIds []string  `json:"inspectorsIds"`
-	IsMerged      bool      `json:"isMerged"`
-	MergedAt      time.Time `json:"mergedAt"`
-	CreatedAt     time.Time `json:"createdAt"`
+	PullRequestID     string     `json:"pull_request_id"`
+	PullRequestName   string     `json:"pull_request_name"`
+	AuthorID          string     `json:"author_id"`
+	Status            string     `json:"status"`
+	AssignedReviewers []string   `json:"assigned_reviewers"`
+	CreatedAt         *time.Time `json:"createdAt,omitempty"`
+	MergedAt          *time.Time `json:"mergedAt,omitempty"`
 }
