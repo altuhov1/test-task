@@ -1,6 +1,8 @@
 package storage
 
-import "github.com/jackc/pgx/v5/pgxpool"
+import (
+	"github.com/jackc/pgx/v5/pgxpool"
+)
 
 type UserPostgresStorage struct {
 	pool *pgxpool.Pool

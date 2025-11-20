@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 	"test-task/internal/models"
+	"test-task/internal/services"
 	"time"
 
 	"test-task/internal/config"
@@ -23,10 +24,15 @@ type App struct {
 }
 
 type Services struct {
+	TeamManag        services.TeamManager
+	UserManag        services.UserManager
+	PullRequestManag services.PullRequestManager
 }
 
 type Storages struct {
-	
+	PullReq storage.PullReqStorage
+	Team    storage.TeamStorage
+	User    storage.UserStorage
 }
 
 func NewApp(cfg *config.Config) *App {
@@ -52,21 +58,32 @@ func (a *App) initStorages() {
 		Port:     a.cfg.PG_PORT,
 	}
 	poolPG, err := storage.NewPoolPg(dbPGConfig)
-	_ = poolPG
 	if err != nil {
 		slog.Error("Failed to initialize PG (pool)", "error", err)
 		os.Exit(1)
 	}
 
-	a.storages = &Storages{}
+	a.storages = &Storages{
+		PullReq: storage.NewPullReqPostgresStorage(poolPG),
+		Team:    storage.NewTeamPostgresStorage(poolPG),
+		User:    storage.NewUserPostgresStorage(poolPG),
+	}
 }
 
 func (a *App) initServices() {
-	a.services = &Services{}
+	a.services = &Services{
+		TeamManag:        services.NewTeamService(a.storages.Team),
+		UserManag:        services.NewUserService(),
+		PullRequestManag: services.NewPullRequestService(),
+	}
 }
 
 func (a *App) initHTTP() {
-	handler, err := handlers.NewHandler()
+	handler, err := handlers.NewHandler(
+		a.services.TeamManag,
+		a.services.UserManag,
+		a.services.PullRequestManag,
+	)
 	if err != nil {
 		slog.Error("Failed to create handler", "error", err)
 		os.Exit(1)
@@ -100,7 +117,6 @@ func (a *App) setupRoutes(handler *handlers.Handler) http.Handler {
 		"/pullRequest/reassign": handler.ReassignReviewer,
 		"/users/getReview":      handler.GetUserReviewPRs,
 	}
-	_ = handler
 	for path, handlerFunc := range apiRoutes {
 		mux.HandleFunc(path, handlerFunc)
 	}
