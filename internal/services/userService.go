@@ -47,13 +47,3 @@ func (s *UserService) SetUserActive(ctx context.Context, userID string, isActive
 
 	return res, nil
 }
-
-func (s *UserService) GetUser(ctx context.Context, userID string) (*models.User, error) {
-
-	user, err := s.userStorage.GetUserTx(ctx, nil, userID)
-	if err != nil {
-		return nil, err
-	}
-
-	return user, nil
-}

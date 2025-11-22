@@ -129,36 +129,3 @@ func (h *Handler) ReassignReviewer(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
-
-// GET /users/getReview
-func (h *Handler) GetUserReviews(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	userID := r.URL.Query().Get("user_id")
-	if userID == "" {
-		writeError(w, http.StatusBadRequest, "user_id parameter is required")
-		return
-	}
-
-	prs, err := h.PullRequestManag.GetUserReviews(r.Context(), userID)
-	if err != nil {
-		switch err {
-		case models.ErrNotFound:
-			writeErrorResponse(w, http.StatusNotFound, "NOT_FOUND", "resource not found")
-		default:
-			writeError(w, http.StatusInternalServerError, "internal server error")
-		}
-		return
-	}
-
-	response := map[string]interface{}{
-		"user_id":       userID,
-		"pull_requests": prs,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
-}

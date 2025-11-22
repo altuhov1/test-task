@@ -11,8 +11,7 @@ type TeamManager interface {
 }
 
 type UserManager interface {
-	SetUserActive(ctx context.Context, userID string, isActive bool) (*models.User, error) // User вместо TeamMember
-	GetUser(ctx context.Context, userID string) (*models.User, error)                      // User вместо TeamMember
+	SetUserActive(ctx context.Context, userID string, isActive bool) (*models.User, error)
 }
 
 type PullRequestManager interface {

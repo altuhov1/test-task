@@ -6,6 +6,7 @@ import (
 	"test-task/internal/models"
 )
 
+// POST /users/setIsActive
 func (h *Handler) SetIsActive(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -42,7 +43,7 @@ func (h *Handler) SetIsActive(w http.ResponseWriter, r *http.Request) {
 		"user": map[string]interface{}{
 			"user_id":   user.UserID,
 			"username":  user.Username,
-			"team_name": user.TeamName, 
+			"team_name": user.TeamName,
 			"is_active": user.IsActive,
 		},
 	}
@@ -51,7 +52,8 @@ func (h *Handler) SetIsActive(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
+// GET /users/getReview
+func (h *Handler) GetUserReviews(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -63,7 +65,7 @@ func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := h.UserManag.GetUser(r.Context(), userID)
+	prs, err := h.PullRequestManag.GetUserReviews(r.Context(), userID)
 	if err != nil {
 		switch err {
 		case models.ErrNotFound:
@@ -75,7 +77,8 @@ func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := map[string]interface{}{
-		"user": user,
+		"user_id":       userID,
+		"pull_requests": prs,
 	}
 
 	w.Header().Set("Content-Type", "application/json")

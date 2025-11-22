@@ -110,41 +110,6 @@ func setupTestDatabase(t *testing.T) *pgxpool.Pool {
 	return pool
 }
 
-func TestUserPostgresStorage_GetUser(t *testing.T) {
-	pool := setupTestDatabase(t)
-	storage := NewUserPostgresStorage(pool)
-	ctx := context.Background()
-
-	t.Run("successfully get user", func(t *testing.T) {
-		tx, err := storage.UserBeginTx(ctx)
-		require.NoError(t, err)
-		defer tx.Rollback(ctx)
-
-		user, err := storage.GetUserTx(ctx, tx, "user1")
-		require.NoError(t, err)
-
-		err = tx.Commit(ctx)
-		require.NoError(t, err)
-
-		assert.Equal(t, "user1", user.UserID)
-		assert.Equal(t, "john_doe", user.Username)
-		assert.Equal(t, "Team Alpha", user.TeamName)
-		assert.True(t, user.IsActive)
-	})
-
-	t.Run("user not found", func(t *testing.T) {
-		tx, err := storage.UserBeginTx(ctx)
-		require.NoError(t, err)
-		defer tx.Rollback(ctx)
-
-		user, err := storage.GetUserTx(ctx, tx, "nonexistent")
-
-		assert.Error(t, err)
-		assert.Equal(t, models.ErrNotFound, err)
-		assert.Nil(t, user)
-	})
-}
-
 func TestUserPostgresStorage_UpdateUserActive(t *testing.T) {
 	pool := setupTestDatabase(t)
 	storage := NewUserPostgresStorage(pool)
